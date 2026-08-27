@@ -54,8 +54,8 @@ Matriz 2D de Pixels (28x28)                Rótulo (Ground Truth)
 ```text
 CienciaDeDadosEmPython/
 │
-├── 01pY.PY              # Etapa 1: Script de carregamento e particionamento dos dados
-├── 02PY.py              # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
+├── data_loader.py        # Etapa 1: Script de carregamento e particionamento dos dados
+├── visualization.py      # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
 ├── executar.py          # Script unificado para execução direta (Treino + Plotagem)
 ├── Implementação.md     # Roteiro teórico e didático da aula
 ├── README.md            # Documentação completa do projeto
@@ -67,7 +67,7 @@ CienciaDeDadosEmPython/
 ## 🛠️ Passo a Passo da Implementação
 
 ### 1. Carregamento dos Dados
-Implementado no arquivo [`01pY.PY`](01pY.PY):
+Implementado no arquivo [`data_loader.py`](data_loader.py):
 
 ```python
 import tensorflow as tf
@@ -83,7 +83,7 @@ import tensorflow as tf
 ---
 
 ### 2. Visualização e Inspeção Visual
-Implementado no arquivo [`02PY.py`](02PY.py):
+Implementado no arquivo [`visualization.py`](visualization.py):
 
 ```python
 import matplotlib.pyplot as plt
@@ -194,8 +194,8 @@ Esse erro ocorre quando tentamos digitar comandos Python diretamente no terminal
 </details>
 
 <details>
-<summary><b>2. Erro: <code>NameError: name 'x_treino' is not defined</code> ao rodar 02PY.py</b></summary>
-Os arquivos <code>01pY.PY</code> e <code>02PY.py</code> foram feitos originalmente como células de aula. Para executar localmente em um único comando, utilize o arquivo <code>executar.py</code>, que une o carregamento e a plotagem.
+<summary><b>2. Erro: <code>NameError: name 'x_treino' is not defined</code> ao rodar visualization.py</b></summary>
+Os arquivos <code>data_loader.py</code> e <code>visualization.py</code> foram feitos originalmente como células de aula. Para executar localmente em um único comando, utilize o arquivo <code>executar.py</code>, que une o carregamento e a plotagem.
 </details>
 
 ---
