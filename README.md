@@ -57,6 +57,7 @@ CienciaDeDadosEmPython/
 ├── data_loader.py        # Etapa 1: Script de carregamento e particionamento dos dados
 ├── visualization.py      # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
 ├── executar.py          # Script unificado para execução direta (Treino + Plotagem)
+├── imagem.png           # Saída visual dos 5 primeiros dígitos da base MNIST
 ├── Implementação.md     # Roteiro teórico e didático da aula
 ├── README.md            # Documentação completa do projeto
 └── LICENSE              # Licença de uso
@@ -101,7 +102,11 @@ plt.show()
 ```
 
 #### Saída esperada:
-Uma grade horizontal apresentando os 5 primeiros registros com seus respectivos rótulos:
+A execução do código gera a seguinte visualização gráfica com os 5 primeiros registros e seus respectivos rótulos:
+
+<p align="center">
+  <img src="imagem.png" alt="Cinco primeiros registros da base de treinamento MNIST" width="800"/>
+</p>
 
 | Amostra 1 | Amostra 2 | Amostra 3 | Amostra 4 | Amostra 5 |
 | :---: | :---: | :---: | :---: | :---: |
