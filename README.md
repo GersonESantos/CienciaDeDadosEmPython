@@ -16,7 +16,8 @@ Repositório dedicado ao estudo e implementação prática de **Visão Computaci
 - [Passo a Passo da Implementação](#-passo-a-passo-da-implementação)
   - [1. Carregamento dos Dados](#1-carregamento-dos-dados)
   - [2. Visualização e Inspeção Visual](#2-visualização-e-inspeção-visual)
-  - [3. Próximas Etapas: Pipeline LeNet-5](#3-próximas-etapas-pipeline-lenet-5)
+  - [3. Separação dos Conjuntos e Expansão de Dimensão](#3-separação-dos-conjuntos-e-expansão-de-dimensão)
+  - [4. Próximas Etapas: Pipeline LeNet-5](#4-próximas-etapas-pipeline-lenet-5)
 - [Como Executar o Projeto](#-como-executar-o-projeto)
   - [Opção 1: Execução Local (VS Code / Terminal)](#opção-1-execução-local-vs-code--terminal)
   - [Opção 2: Execução no Google Colab / Jupyter](#opção-2-execução-no-google-colab--jupyter)
@@ -37,7 +38,7 @@ A arquitetura **LeNet-5**, desenvolvida por *Yann LeCun et al.* em 1998, é uma 
 O **MNIST** (*Modified National Institute of Standards and Technology*) é o dataset "Hello World" do aprendizado de máquina:
 
 - **Volume Total:** 70.000 imagens em escala de cinza de dígitos de $0$ a $9$.
-- **Divisão:** 60.000 amostras para **treinamento** e 10.000 para **testes**.
+- **Divisão:** 55.000 para **treinamento**, 5.000 para **validação** e 10.000 para **testes**.
 - **Resolução:** $28 \times 28$ pixels por imagem (valores de intensidade de 0 a 255).
 
 ```
@@ -56,9 +57,12 @@ CienciaDeDadosEmPython/
 │
 ├── data_loader.py        # Etapa 1: Script de carregamento e particionamento dos dados
 ├── visualization.py      # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
+├── data_split.py         # Etapa 3: Separação em Treino (55k), Validação (5k) e Testes (10k)
+├── 03PY.py               # Snippet da Etapa 3 conforme a aula
 ├── executar.py          # Script unificado para execução direta (Treino + Plotagem)
 ├── imagem.png           # Saída visual dos 5 primeiros dígitos da base MNIST
-├── Implementação.md     # Roteiro teórico e didático da aula
+├── Implementação.md     # Roteiro teórico da Parte 1 (Carga e visualização)
+├── Implementação2.md    # Roteiro teórico da Parte 2 (Divisão dos conjuntos)
 ├── README.md            # Documentação completa do projeto
 └── LICENSE              # Licença de uso
 ```
@@ -68,7 +72,7 @@ CienciaDeDadosEmPython/
 ## 🛠️ Passo a Passo da Implementação
 
 ### 1. Carregamento dos Dados
-Implementado no arquivo [`data_loader.py`](data_loader.py):
+Implementado no arquivo [`data_loader.py`](data_loader.py) (conforme [`Implementação.md`](Implementação.md)):
 
 ```python
 import tensorflow as tf
@@ -78,7 +82,7 @@ import tensorflow as tf
 ```
 
 #### Entendendo as variáveis:
-- **`x_treino` e `x_teste` ($X$ - Features):** Tensores contendo as matrizes de pixels das imagens. Formato: `(60000, 28, 28)`.
+- **`x_treino` e `x_teste` ($X$ - Features):** Tensores contendo as matrizes de pixels das imagens. Formato inicial: `(60000, 28, 28)`.
 - **`y_treino` e `y_teste` ($Y$ - Labels / Classes):** Vetores com os números reais (0 a 9) que a rede deve aprender a prever.
 
 ---
@@ -118,22 +122,58 @@ A execução do código gera a seguinte visualização gráfica com os 5 primeir
 
 ---
 
-### 3. Próximas Etapas: Pipeline LeNet-5
+### 3. Separação dos Conjuntos e Expansão de Dimensão
+Implementado no arquivo [`data_split.py`](data_split.py) / [`03PY.py`](03PY.py) (conforme [`Implementação2.md`](Implementação2.md)):
+
+```python
+import numpy as np
+ 
+quantidade_dados_treino = 55000
+ 
+# 1. Separação da validação (5.000 amostras) e adição da dimensão do canal
+x_validacao = x_treino[quantidade_dados_treino:, ..., np.newaxis]
+y_validacao = y_treino[quantidade_dados_treino:]
+
+# 2. Ajuste do treino para 55.000 amostras + canal
+x_treino = x_treino[:quantidade_dados_treino, ..., np.newaxis]
+y_treino = y_treino[:quantidade_dados_treino]
+ 
+# 3. Adição do canal ao conjunto de testes (10.000 amostras)
+x_teste = x_teste[..., np.newaxis]
+ 
+print('Formato da Imagem:{}'.format(x_treino[0].shape))
+print('Conjunto de Treinamento: {} registros'.format(len(x_treino)))
+print('Conjunto de Validação:   {} registros'.format(len(x_validacao)))
+print('Conjunto de Testes:      {} registros'.format(len(x_teste)))
+```
+
+#### O que está acontecendo aqui?
+1. **Três Subconjuntos de Dados:**
+   - **Treinamento (55.000 amostras):** Usado diretamente para a rede calcular o erro e ajustar os pesos sinápticos via Backpropagation.
+   - **Validação (5.000 amostras):** Avalia a performance a cada época para ajuste de hiperparâmetros e prevenção de *overfitting* (*Early Stopping*).
+   - **Testes (10.000 amostras):** Conjunto intocado usado apenas no final para certificar a capacidade de generalização do modelo em produção.
+2. **Expansão de Dimensões (`np.newaxis`):**
+   - As camadas convolucionais 2D (`Conv2D`) do Keras exigem tensores 4D no formato `(batch, altura, largura, canais)`.
+   - O comando `x[..., np.newaxis]` transforma o formato de `(28, 28)` para `(28, 28, 1)` (1 canal de cor para escala de cinza).
+
+---
+
+### 4. Próximas Etapas: Pipeline LeNet-5
 
 Para finalizar o treinamento da rede **LeNet-5**, o pipeline completo segue o seguinte fluxo:
 
 ```mermaid
 flowchart LR
-    A[Carregar MNIST] --> B[Normalizar Pixels / 255.0]
-    B --> C[Reshape 28x28x1]
-    C --> D[Camadas Convolucionais + Pooling]
-    D --> E[Camadas Densas / Flatten]
-    E --> F[Saída Softmax 10 Classes]
+    A[Carregar MNIST] --> B[Visualizar Amostras]
+    B --> C[Dividir Treino/Validação/Teste]
+    C --> D[Normalizar Pixels / 255.0]
+    D --> E[Camadas Convolucionais + Pooling]
+    E --> F[Camadas Densas / Flatten]
+    F --> G[Saída Softmax 10 Classes]
 ```
 
 1. **Normalização:** Escalar valores de `[0, 255]` para `[0.0, 1.0]` dividindo por `255.0` (acelera a convergência do gradiente).
-2. **Ajuste de Dimensão (Reshape):** Converter para `(batch, 28, 28, 1)` para indicar canal único (escala de cinza).
-3. **Construção do Modelo LeNet-5:**
+2. **Construção do Modelo LeNet-5:**
    - **Conv2D** ($6$ filtros $5\times5$, ativação `tanh` ou `relu`)
    - **AveragePooling2D / MaxPooling2D** ($2\times2$, stride 2)
    - **Conv2D** ($16$ filtros $5\times5$)
