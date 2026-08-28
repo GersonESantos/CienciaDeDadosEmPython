@@ -260,6 +260,27 @@ Se preferir rodar em ambiente de nuvem interativo:
        plt.yticks([])
    plt.show()
    ```
+4. **Célula 3 (Separação dos Conjuntos e Canal):**
+   ```python
+   import numpy as np
+
+   quantidade_dados_treino = 55000
+   x_validacao = x_treino[quantidade_dados_treino:, ..., np.newaxis]
+   y_validacao = y_treino[quantidade_dados_treino:]
+   x_treino = x_treino[:quantidade_dados_treino, ..., np.newaxis]
+   y_treino = y_treino[:quantidade_dados_treino]
+   x_teste = x_teste[..., np.newaxis]
+   ```
+5. **Célula 4 (Zero-Padding 32x32 para LeNet-5):**
+   ```python
+   x_treino = np.pad(x_treino, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+   x_validacao = np.pad(x_validacao, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+   x_teste = np.pad(x_teste, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+
+   print("Treino:", x_treino.shape)
+   print("Validação:", x_validacao.shape)
+   print("Teste:", x_teste.shape)
+   ```
 
 ---
 
