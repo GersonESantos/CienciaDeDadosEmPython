@@ -23,13 +23,13 @@ pip install tensorflow matplotlib numpy
 
 ## 🚀 2. Opção Rápida: Executar Todo o Pipeline
 
-Se você deseja executar todas as 4 etapas de uma só vez com logs explicativos e visualização gráfica dos dados, execute o script unificado:
+Se você deseja executar todas as 5 etapas de uma só vez com logs explicativos e visualização gráfica dos dados, execute o script unificado:
 
 ```powershell
 python executar.py
 ```
 
-> **Nota:** Durante a execução, uma janela do **Matplotlib** será aberta na tela com os 5 primeiros dígitos. **Feche a janela do gráfico** para que o script continue para as etapas de divisão e preenchimento (padding).
+> **Nota:** Durante a execução, uma janela do **Matplotlib** será aberta na tela com os 5 primeiros dígitos. **Feche a janela do gráfico** para que o script continue para as etapas de divisão, padding e normalização.
 
 ---
 
@@ -96,12 +96,32 @@ Conjunto de Testes:      (10000, 32, 32, 1)
 
 ---
 
+### Etapa 5: Normalização dos Dados ([0.0, 1.0])
+- **Arquivo:** [`data_normalization.py`](data_normalization.py)
+- **O que faz:** Divide os valores dos pixels por 255.0 para trazê-los do intervalo $[0, 255]$ para $[0.0, 1.0]$, garantindo estabilidade e rápida convergência do gradiente.
+- **Comando:**
+  ```powershell
+  python data_normalization.py
+  ```
+
+**Saída esperada no terminal:**
+```text
+--- RESUMO DOS DADOS NORMALIZADOS ---
+Formato Treinamento: (55000, 32, 32, 1) (Min: 0.00, Max: 1.00)
+Formato Validação:   (5000, 32, 32, 1) (Min: 0.00, Max: 1.00)
+Formato Testes:      (10000, 32, 32, 1) (Min: 0.00, Max: 1.00)
+```
+
+---
+
 ## 🌐 4. Executando no Google Colab (Passo a Passo em Células)
 
-Caso queira reproduzir o ambiente de sala de aula no **Google Colab**:
+Você pode acessar o notebook pronto diretamente no link:
+👉 **[Abrir Notebook no Google Colab](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)**
 
+Caso queira criar um notebook novo do zero:
 1. Acesse [colab.research.google.com](https://colab.research.google.com/) e crie um **Novo Notebook**.
-2. Crie e execute as 4 células em sequência (<kbd>Shift</kbd> + <kbd>Enter</kbd>):
+2. Crie e execute as 5 células em sequência (<kbd>Shift</kbd> + <kbd>Enter</kbd>):
 
 ### Célula 1 — Carga dos Dados
 ```python
@@ -149,10 +169,23 @@ x_treino = np.pad(x_treino, ((0,0), (2,2), (2,2), (0,0)), 'constant')
 x_validacao = np.pad(x_validacao, ((0,0), (2,2), (2,2), (0,0)), 'constant')
 x_teste = np.pad(x_teste, ((0,0), (2,2), (2,2), (0,0)), 'constant')
 
-print("Formato final pronto para LeNet-5:")
-print(f"Treino:    {x_treino.shape}")
-print(f"Validação: {x_validacao.shape}")
-print(f"Teste:     {x_teste.shape}")
+print("Treino:", x_treino.shape)
+print("Validação:", x_validacao.shape)
+print("Teste:", x_teste.shape)
+```
+
+### Célula 5 — Normalização dos Pixels [0, 1]
+```python
+normalizar_dados = lambda t: t / 255.0
+
+x_treino = normalizar_dados(x_treino)
+x_validacao = normalizar_dados(x_validacao)
+x_teste = normalizar_dados(x_teste)
+
+print("Status final pronto para a rede LeNet-5:")
+print(f"Treino:    {x_treino.shape} -> Valores entre [{x_treino.min():.2f}, {x_treino.max():.2f}]")
+print(f"Validação: {x_validacao.shape} -> Valores entre [{x_validacao.min():.2f}, {x_validacao.max():.2f}]")
+print(f"Teste:     {x_teste.shape} -> Valores entre [{x_teste.min():.2f}, {x_teste.max():.2f}]")
 ```
 
 ---
@@ -162,5 +195,5 @@ print(f"Teste:     {x_teste.shape}")
 | Problema | Causa | Solução |
 | :--- | :--- | :--- |
 | `import: The term 'import' is not recognized` | Digitar comando Python diretamente no PowerShell. | Execute scripts com `python nome_do_arquivo.py`. |
-| `NameError: name 'x_treino' is not defined` | Executar um script que depende de variáveis de outro arquivo sem tê-las carregado. | Utilize o script completo do módulo (ex: `data_split.py`, `data_padding.py` ou `executar.py`). |
+| `NameError: name 'x_treino' is not defined` | Executar um script que depende de variáveis de outro arquivo sem tê-las carregado. | Utilize o script completo do módulo (ex: `data_split.py`, `data_padding.py`, `data_normalization.py` ou `executar.py`). |
 | O terminal parece "travado" após a Etapa 2 | A janela gráfica do Matplotlib foi aberta e está aguardando interação. | Feche a janela da imagem para o script prosseguir. |

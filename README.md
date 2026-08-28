@@ -1,9 +1,13 @@
 # 🧠 Ciência de Dados em Python: Reconhecimento de Dígitos com MNIST e LeNet-5
 
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)
+
+
 [![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
 [![Keras](https://img.shields.io/badge/Keras-3.x-red.svg)](https://keras.io/)
 [![Matplotlib](https://img.shields.io/badge/Matplotlib-Visualization-green.svg)](https://matplotlib.org/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)
 
 Repositório dedicado ao estudo e implementação prática de **Visão Computacional** e **Deep Learning** aplicados ao reconhecimento de dígitos manuscritos da base **MNIST**, utilizando a clássica arquitetura de Rede Neural Convolucional (CNN) **LeNet-5**.
 
@@ -18,7 +22,8 @@ Repositório dedicado ao estudo e implementação prática de **Visão Computaci
   - [2. Visualização e Inspeção Visual](#2-visualização-e-inspeção-visual)
   - [3. Separação dos Conjuntos e Expansão de Dimensão](#3-separação-dos-conjuntos-e-expansão-de-dimensão)
   - [4. Preenchimento de Zeros (Zero-Padding para 32x32)](#4-preenchimento-de-zeros-zero-padding-para-32x32)
-  - [5. Próximas Etapas: Pipeline LeNet-5](#5-próximas-etapas-pipeline-lenet-5)
+  - [5. Normalização dos Dados (Escala de 0.0 a 1.0)](#5-normalização-dos-dados-escala-de-00-a-10)
+  - [6. Próximas Etapas: Pipeline LeNet-5](#6-próximas-etapas-pipeline-lenet-5)
 - [Como Executar o Projeto](#-como-executar-o-projeto)
   - [Opção 1: Execução Local (VS Code / Terminal)](#opção-1-execução-local-vs-code--terminal)
   - [Opção 2: Execução no Google Colab / Jupyter](#opção-2-execução-no-google-colab--jupyter)
@@ -40,13 +45,12 @@ O **MNIST** (*Modified National Institute of Standards and Technology*) é o dat
 
 - **Volume Total:** 70.000 imagens em escala de cinza de dígitos de $0$ a $9$.
 - **Divisão:** 55.000 para **treinamento**, 5.000 para **validação** e 10.000 para **testes**.
-- **Resolução:** $28 \times 28$ pixels (expandidos para $32 \times 32$ com padding para compatibilidade com a LeNet-5).
+- **Resolução:** $28 \times 28$ pixels (expandidos para $32 \times 32$ com padding e normalizados para $[0.0, 1.0]$).
 
 ```
-Matriz 2D de Pixels (28x28)                Padding (32x32)               Rótulo (Ground Truth)
-   [ [  0,   0,   0, ... ],               + 2 pixels borda                    
-     [  0, 253, 255, ... ],    ======>    em todos os lados  ======>          "5"
-     [  0,   0,   0, ... ] ]              (zeros ao redor)
+Matriz 2D (28x28)             Padding (32x32)             Normalização [0, 1]          Rótulo
+   [ [ 0, 255, ... ],  =====>   + 2px borda zeros  =====>      Dividido por 255   =====>   "5"
+     [ 0, 128, ... ] ]          (zeros ao redor)              (0.0 a 1.0)
 ```
 
 ---
@@ -56,18 +60,21 @@ Matriz 2D de Pixels (28x28)                Padding (32x32)               Rótulo
 ```text
 CienciaDeDadosEmPython/
 │
-├── data_loader.py        # Etapa 1: Script de carregamento e particionamento dos dados
-├── visualization.py      # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
-├── data_split.py         # Etapa 3: Separação em Treino (55k), Validação (5k) e Testes (10k)
-├── data_padding.py       # Etapa 4: Preenchimento de Zeros (Zero-Padding para 32x32)
-├── executar.py          # Script unificado para execução direta (Treino + Plotagem)
-├── imagem.png           # Saída visual dos 5 primeiros dígitos da base MNIST
-├── Implementação.md     # Roteiro teórico da Parte 1 (Carga e visualização)
-├── Implementação2.md    # Roteiro teórico da Parte 2 (Divisão dos conjuntos)
-├── Implementação3.md    # Roteiro teórico da Parte 3 (Padding de entrada)
-├── Instrucoes.md        # Guia prático de instruções de execução passo a passo
-├── README.md            # Documentação completa do projeto
-└── LICENSE              # Licença de uso
+├── data_loader.py         # Etapa 1: Script de carregamento e particionamento dos dados
+├── visualization.py       # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
+├── data_split.py          # Etapa 3: Separação em Treino (55k), Validação (5k) e Testes (10k)
+├── data_padding.py        # Etapa 4: Preenchimento de Zeros (Zero-Padding para 32x32)
+├── data_normalization.py  # Etapa 5: Normalização dos valores dos pixels para [0.0, 1.0]
+├── 05PY.py                # Snippet da Etapa 5 conforme a aula
+├── executar.py           # Script unificado com pipeline completo (Etapas 1 a 5)
+├── imagem.png            # Saída visual dos 5 primeiros dígitos da base MNIST
+├── Implementação.md      # Roteiro teórico da Parte 1 (Carga e visualização)
+├── Implementação2.md     # Roteiro teórico da Parte 2 (Divisão dos conjuntos)
+├── Implementação3.md     # Roteiro teórico da Parte 3 (Padding de entrada)
+├── Implementação4.md     # Roteiro teórico da Parte 4 (Normalização dos dados)
+├── Instrucoes.md         # Guia prático de instruções de execução passo a passo
+├── README.md             # Documentação completa do projeto
+└── LICENSE               # Licença de uso
 ```
 
 ---
@@ -180,17 +187,40 @@ print('Conjunto de Validação:   {}'.format(x_validacao.shape))
 print('Conjunto de Testes:      {}'.format(x_teste.shape))
 ```
 
-#### Evolução das Dimensões dos Tensores:
+---
 
-| Etapa | Formato do Tensor de Treino | Descrição |
-| :--- | :---: | :--- |
-| **1. Carga Bruta** | `(60000, 28, 28)` | Matriz 2D original do MNIST |
-| **2. Split + Canal** | `(55000, 28, 28, 1)` | 55k amostras com canal único |
-| **3. Zero-Padding** | `(55000, 32, 32, 1)` | Formato ideal para a entrada da LeNet-5 |
+### 5. Normalização dos Dados (Escala de 0.0 a 1.0)
+Implementado no arquivo [`data_normalization.py`](data_normalization.py) / [`05PY.py`](05PY.py) (conforme [`Implementação4.md`](Implementação4.md)):
+
+Os pixels de imagens digitais originalmente possuem valores inteiros de $0$ a $255$. Para alimentar redes neurais convolucionais, normalizamos para a escala de $[0.0, 1.0]$ dividindo os valores por $255.0$:
+
+```python
+# Função de normalização com lambda
+normalizar_dados = lambda t: t / 255.0
+
+x_treino = normalizar_dados(x_treino)
+x_validacao = normalizar_dados(x_validacao)
+x_teste = normalizar_dados(x_teste)
+
+print(f"Valores do Treino -> Mínimo: {x_treino.min():.2f}, Máximo: {x_treino.max():.2f}")
+```
+
+#### Por que a normalização é indispensável em Deep Learning?
+- **Estabilidade do Gradiente**: Impede que os pesos da rede saturem ou explodam logo nas primeiras épocas de treino.
+- **Convergência Acelerada**: O algoritmo de otimização (como Adam ou SGD) encontra o mínimo global da função de perda muito mais rapidamente.
+
+#### Evolução das Dimensões e Tipos dos Tensores:
+
+| Etapa | Formato do Tensor de Treino | Tipo de Dado | Intervalo de Valores |
+| :--- | :---: | :---: | :---: |
+| **1. Carga Bruta** | `(60000, 28, 28)` | `uint8` | $[0, 255]$ |
+| **2. Split + Canal** | `(55000, 28, 28, 1)` | `uint8` | $[0, 255]$ |
+| **3. Zero-Padding** | `(55000, 32, 32, 1)` | `uint8` | $[0, 255]$ |
+| **4. Normalização** | **`(55000, 32, 32, 1)`** | **`float32/float64`** | **$[0.0, 1.0]$** |
 
 ---
 
-### 5. Próximas Etapas: Pipeline LeNet-5
+### 6. Próximas Etapas: Pipeline LeNet-5
 
 Para finalizar o treinamento da rede **LeNet-5**, o pipeline completo segue o seguinte fluxo:
 
@@ -199,14 +229,13 @@ flowchart LR
     A[Carregar MNIST] --> B[Visualizar Amostras]
     B --> C[Dividir Treino/Val/Teste]
     C --> D[Zero-Padding 32x32]
-    D --> E[Normalizar Pixels / 255.0]
+    D --> E[Normalizar / 255.0]
     E --> F[Camadas Convolucionais + Pooling]
     F --> G[Camadas Densas / Flatten]
     G --> H[Saída Softmax 10 Classes]
 ```
 
-1. **Normalização:** Escalar valores de `[0, 255]` para `[0.0, 1.0]` dividindo por `255.0` (acelera a convergência do gradiente).
-2. **Construção do Modelo LeNet-5:**
+1. **Construção do Modelo LeNet-5:**
    - **Conv2D** ($6$ filtros $5\times5$, ativação `tanh` ou `relu`)
    - **AveragePooling2D / MaxPooling2D** ($2\times2$, stride 2)
    - **Conv2D** ($16$ filtros $5\times5$)
@@ -240,8 +269,12 @@ python executar.py
 
 ### Opção 2: Execução no Google Colab / Jupyter
 
-Se preferir rodar em ambiente de nuvem interativo:
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)
 
+Você pode acessar e rodar diretamente o notebook completo no Google Colab clicando no botão acima ou acessando o link:
+👉 **[Notebook no Google Colab](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)**
+
+Caso queira criar do zero:
 1. Acesse [Google Colab](https://colab.research.google.com/) e crie um **Novo Notebook**.
 2. **Célula 1 (Carregamento):**
    ```python
@@ -282,6 +315,19 @@ Se preferir rodar em ambiente de nuvem interativo:
    print("Validação:", x_validacao.shape)
    print("Teste:", x_teste.shape)
    ```
+6. **Célula 5 (Normalização dos Pixels [0, 1]):**
+   ```python
+   normalizar_dados = lambda t: t / 255.0
+
+   x_treino = normalizar_dados(x_treino)
+   x_validacao = normalizar_dados(x_validacao)
+   x_teste = normalizar_dados(x_teste)
+
+   print("Status final pronto para a rede LeNet-5:")
+   print(f"Treino:    {x_treino.shape} -> Intervalo: [{x_treino.min():.2f}, {x_treino.max():.2f}]")
+   print(f"Validação: {x_validacao.shape} -> Intervalo: [{x_validacao.min():.2f}, {x_validacao.max():.2f}]")
+   print(f"Teste:     {x_teste.shape} -> Intervalo: [{x_teste.min():.2f}, {x_teste.max():.2f}]")
+   ```
 
 ---
 
@@ -300,6 +346,7 @@ Os arquivos <code>data_loader.py</code> e <code>visualization.py</code> foram fe
 ---
 
 ## 📚 Referências e Links Úteis
+- [Notebook Interativo deste Projeto no Google Colab](https://colab.research.google.com/drive/1qq1aWl2uJs-BvFPtWcjmUAmY2Gxi3-PC#scrollTo=edkI5lnRDLXR)
 - [LeCun et al., 1998 - Gradient-Based Learning Applied to Document Recognition (LeNet-5)](http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf)
 - [Documentação Oficial do TensorFlow Keras](https://www.tensorflow.org/api_docs/python/tf/keras)
 - [Documentação do Matplotlib](https://matplotlib.org/stable/contents.html)

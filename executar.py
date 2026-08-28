@@ -2,9 +2,9 @@ import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-print("=" * 60)
+print("=" * 65)
 print("🧠 Pipeline de Pré-processamento MNIST para LeNet-5")
-print("=" * 60)
+print("=" * 65)
 
 # 1. Carregamento dos dados (data_loader.py)
 print("\n[Etapa 1] Carregando dataset MNIST original...")
@@ -43,8 +43,16 @@ x_treino = np.pad(x_treino, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
 x_validacao = np.pad(x_validacao, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
 x_teste = np.pad(x_teste, ((0, 0), (2, 2), (2, 2), (0, 0)), 'constant')
 
-print("\n--- RESUMO FINAL DOS TENSORES PRONTOS PARA A LENET-5 ---")
-print(f"Conjunto de Treinamento: {x_treino.shape}")
-print(f"Conjunto de Validação:   {x_validacao.shape}")
-print(f"Conjunto de Testes:      {x_teste.shape}")
-print("=" * 60)
+# 5. Normalização dos dados (data_normalization.py / 0-255 -> 0.0-1.0)
+print("\n[Etapa 5] Normalizando valores de pixels para o intervalo [0.0, 1.0]...")
+normalizar_dados = lambda t: t / 255.0
+x_treino = normalizar_dados(x_treino)
+x_validacao = normalizar_dados(x_validacao)
+x_teste = normalizar_dados(x_teste)
+
+print("\n" + "=" * 65)
+print("--- RESUMO FINAL DOS TENSORES PRONTOS PARA A LENET-5 ---")
+print(f"Conjunto de Treinamento: {x_treino.shape} (Intervalo: [{x_treino.min():.1f}, {x_treino.max():.1f}])")
+print(f"Conjunto de Validação:   {x_validacao.shape} (Intervalo: [{x_validacao.min():.1f}, {x_validacao.max():.1f}])")
+print(f"Conjunto de Testes:      {x_teste.shape} (Intervalo: [{x_teste.min():.1f}, {x_teste.max():.1f}])")
+print("=" * 65)
