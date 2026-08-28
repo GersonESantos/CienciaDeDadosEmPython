@@ -65,6 +65,7 @@ CienciaDeDadosEmPython/
 ├── Implementação.md     # Roteiro teórico da Parte 1 (Carga e visualização)
 ├── Implementação2.md    # Roteiro teórico da Parte 2 (Divisão dos conjuntos)
 ├── Implementação3.md    # Roteiro teórico da Parte 3 (Padding de entrada)
+├── Instrucoes.md        # Guia prático de instruções de execução passo a passo
 ├── README.md            # Documentação completa do projeto
 └── LICENSE              # Licença de uso
 ```
