@@ -17,7 +17,8 @@ Repositório dedicado ao estudo e implementação prática de **Visão Computaci
   - [1. Carregamento dos Dados](#1-carregamento-dos-dados)
   - [2. Visualização e Inspeção Visual](#2-visualização-e-inspeção-visual)
   - [3. Separação dos Conjuntos e Expansão de Dimensão](#3-separação-dos-conjuntos-e-expansão-de-dimensão)
-  - [4. Próximas Etapas: Pipeline LeNet-5](#4-próximas-etapas-pipeline-lenet-5)
+  - [4. Preenchimento de Zeros (Zero-Padding para 32x32)](#4-preenchimento-de-zeros-zero-padding-para-32x32)
+  - [5. Próximas Etapas: Pipeline LeNet-5](#5-próximas-etapas-pipeline-lenet-5)
 - [Como Executar o Projeto](#-como-executar-o-projeto)
   - [Opção 1: Execução Local (VS Code / Terminal)](#opção-1-execução-local-vs-code--terminal)
   - [Opção 2: Execução no Google Colab / Jupyter](#opção-2-execução-no-google-colab--jupyter)
@@ -39,13 +40,13 @@ O **MNIST** (*Modified National Institute of Standards and Technology*) é o dat
 
 - **Volume Total:** 70.000 imagens em escala de cinza de dígitos de $0$ a $9$.
 - **Divisão:** 55.000 para **treinamento**, 5.000 para **validação** e 10.000 para **testes**.
-- **Resolução:** $28 \times 28$ pixels por imagem (valores de intensidade de 0 a 255).
+- **Resolução:** $28 \times 28$ pixels (expandidos para $32 \times 32$ com padding para compatibilidade com a LeNet-5).
 
 ```
-Matriz 2D de Pixels (28x28)                Rótulo (Ground Truth)
-   [ [  0,   0,   0, ... ],                      
-     [  0, 253, 255, ... ],        ======>           "5"
-     [  0,   0,   0, ... ] ]
+Matriz 2D de Pixels (28x28)                Padding (32x32)               Rótulo (Ground Truth)
+   [ [  0,   0,   0, ... ],               + 2 pixels borda                    
+     [  0, 253, 255, ... ],    ======>    em todos os lados  ======>          "5"
+     [  0,   0,   0, ... ] ]              (zeros ao redor)
 ```
 
 ---
@@ -58,11 +59,12 @@ CienciaDeDadosEmPython/
 ├── data_loader.py        # Etapa 1: Script de carregamento e particionamento dos dados
 ├── visualization.py      # Etapa 2: Script de plotagem dos primeiros dígitos com Matplotlib
 ├── data_split.py         # Etapa 3: Separação em Treino (55k), Validação (5k) e Testes (10k)
-├── 03PY.py               # Snippet da Etapa 3 conforme a aula
+├── data_padding.py       # Etapa 4: Preenchimento de Zeros (Zero-Padding para 32x32)
 ├── executar.py          # Script unificado para execução direta (Treino + Plotagem)
 ├── imagem.png           # Saída visual dos 5 primeiros dígitos da base MNIST
 ├── Implementação.md     # Roteiro teórico da Parte 1 (Carga e visualização)
 ├── Implementação2.md    # Roteiro teórico da Parte 2 (Divisão dos conjuntos)
+├── Implementação3.md    # Roteiro teórico da Parte 3 (Padding de entrada)
 ├── README.md            # Documentação completa do projeto
 └── LICENSE              # Licença de uso
 ```
@@ -158,18 +160,48 @@ print('Conjunto de Testes:      {} registros'.format(len(x_teste)))
 
 ---
 
-### 4. Próximas Etapas: Pipeline LeNet-5
+### 4. Preenchimento de Zeros (Zero-Padding para 32x32)
+Implementado no arquivo [`data_padding.py`](data_padding.py) (conforme [`Implementação3.md`](Implementação3.md)):
+
+A arquitetura original **LeNet-5** foi projetada para receber imagens de entrada com dimensões $32 \times 32$. Como as imagens do MNIST são $28 \times 28$, adicionamos 2 pixels de preenchimento com zeros (`0`) nas 4 bordas (superior, inferior, esquerda, direita):
+
+$$28 + 2 + 2 = 32$$
+
+```python
+# Adiciona 2 pixels de zeros nas bordas: ((batch), (altura), (largura), (canal))
+x_treino = np.pad(x_treino, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+x_validacao = np.pad(x_validacao, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+x_teste = np.pad(x_teste, ((0,0), (2,2), (2,2), (0,0)), 'constant')
+
+print('Informações sobre as mudanças dos dados de entrada: ', end='\n\n')
+print('Conjunto de Treinamento: {}'.format(x_treino.shape))
+print('Conjunto de Validação:   {}'.format(x_validacao.shape))
+print('Conjunto de Testes:      {}'.format(x_teste.shape))
+```
+
+#### Evolução das Dimensões dos Tensores:
+
+| Etapa | Formato do Tensor de Treino | Descrição |
+| :--- | :---: | :--- |
+| **1. Carga Bruta** | `(60000, 28, 28)` | Matriz 2D original do MNIST |
+| **2. Split + Canal** | `(55000, 28, 28, 1)` | 55k amostras com canal único |
+| **3. Zero-Padding** | `(55000, 32, 32, 1)` | Formato ideal para a entrada da LeNet-5 |
+
+---
+
+### 5. Próximas Etapas: Pipeline LeNet-5
 
 Para finalizar o treinamento da rede **LeNet-5**, o pipeline completo segue o seguinte fluxo:
 
 ```mermaid
 flowchart LR
     A[Carregar MNIST] --> B[Visualizar Amostras]
-    B --> C[Dividir Treino/Validação/Teste]
-    C --> D[Normalizar Pixels / 255.0]
-    D --> E[Camadas Convolucionais + Pooling]
-    E --> F[Camadas Densas / Flatten]
-    F --> G[Saída Softmax 10 Classes]
+    B --> C[Dividir Treino/Val/Teste]
+    C --> D[Zero-Padding 32x32]
+    D --> E[Normalizar Pixels / 255.0]
+    E --> F[Camadas Convolucionais + Pooling]
+    F --> G[Camadas Densas / Flatten]
+    G --> H[Saída Softmax 10 Classes]
 ```
 
 1. **Normalização:** Escalar valores de `[0, 255]` para `[0.0, 1.0]` dividindo por `255.0` (acelera a convergência do gradiente).
