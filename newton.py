@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from keras import layers, models, utils
 from keras.datasets import mnist
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,12 +13,13 @@ train_images = train_images.reshape((60000, 28, 28, 1)).astype('float32') / 255
 test_images = test_images.reshape((10000, 28, 28, 1)).astype('float32') / 255
  
 # Converter rótulos em codificação one-hot
-train_labels = tf.keras.utils.to_categorical(train_labels)
-test_labels = tf.keras.utils.to_categorical(test_labels)
+train_labels = utils.to_categorical(train_labels)
+test_labels = utils.to_categorical(test_labels)
  
 # Construir o modelo CNN
 model = models.Sequential([
-    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),  # Camada convolucional com 32 filtros de tamanho 3x3
+    layers.Input(shape=(28, 28, 1)),  # Camada de entrada explicitando as dimensões
+    layers.Conv2D(32, (3, 3), activation='relu'),  # Camada convolucional com 32 filtros de tamanho 3x3
     layers.MaxPooling2D((2, 2)),  # Camada de pooling para redução de dimensionalidade
     layers.Conv2D(64, (3, 3), activation='relu'),  # Segunda camada convolucional com 64 filtros de tamanho 3x3
     layers.MaxPooling2D((2, 2)),  # Outra camada de pooling
